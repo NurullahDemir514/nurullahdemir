@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .card-base {
+    @apply bg-surface/30 backdrop-blur-sm p-6 rounded-xl border border-surface-dark/50 hover:border-accent/30 transition-all duration-300;
+  }
+}
 /* Scrollbar Stilleri */
 ::-webkit-scrollbar {
   width: 10px;
