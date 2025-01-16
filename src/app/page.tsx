@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import { projects } from "@/data/projects";
-import ProjectCard from "@/components/ProjectCard";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -12,7 +11,7 @@ export default function Home() {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const mainRef = useRef<HTMLElement>(null);
 
-  const handleWheel = (e: WheelEvent) => {
+  const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     if (isScrolling) return;
 
@@ -31,7 +30,7 @@ export default function Home() {
         setIsScrolling(false);
       }, 1000);
     }
-  };
+  }, [isScrolling, currentSectionIndex]);
 
   useEffect(() => {
     const main = mainRef.current;
@@ -39,7 +38,7 @@ export default function Home() {
       main.addEventListener('wheel', handleWheel, { passive: false });
       return () => main.removeEventListener('wheel', handleWheel);
     }
-  }, [isScrolling, currentSectionIndex]);
+  }, [isScrolling, currentSectionIndex, handleWheel]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,7 +64,7 @@ export default function Home() {
       } else {
         setSubmitStatus('error');
       }
-    } catch (error) {
+    } catch {
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -77,20 +76,23 @@ export default function Home() {
       {/* Kod Animasyonu */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 overflow-hidden">
-          {Array.from({ length: 15 }, (_, i) => (
-            <div
-              key={i}
-              className="code-line"
-              style={{
-                position: 'absolute',
-                top: `${i * 7}%`,
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 4}s`
-              }}
-            >
-              {`const ${['function', 'component', 'element', 'module'][Math.floor(Math.random() * 4)]} = () => {`}
-            </div>
-          ))}
+          {Array.from({ length: 15 }, (_, i) => {
+            const functions = ['function', 'component', 'element', 'module'];
+            return (
+              <div
+                key={i}
+                className="code-line"
+                style={{
+                  position: 'absolute',
+                  top: `${i * 7}%`,
+                  left: `${(i * 20) % 100}%`,
+                  animationDelay: `${i * 0.2}s`
+                }}
+              >
+                {`const ${functions[i % 4]} = () => {`}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -114,6 +116,7 @@ export default function Home() {
                 src="/profile.jpg"
                 alt="Nurullah Demir"
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover group-hover:scale-110 transition-all duration-500"
                 priority
               />
