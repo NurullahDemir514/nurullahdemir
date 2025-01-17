@@ -1,19 +1,17 @@
-export interface Project {
-    id: number;
+interface Project {
     title: string;
     description: string;
     technologies: string[];
-    url: string;
-    linkText: string;
+    github?: string;
+    demo?: string;
 }
 
 export const projects: Project[] = [
     {
-        id: 1,
         title: "Bütçem",
         description: "Kişisel finans yönetimi için geliştirilmiş web uygulaması. Gelir-gider takibi, bütçe planlaması ve finansal raporlama özellikleri sunar.",
         technologies: ["Next.js", "TypeScript", "Tailwind CSS", "MongoDB"],
-        url: "https://xn--btem-1oa8j.com",
-        linkText: "Siteyi Ziyaret Et"
+        github: "https://github.com/username/butcem",
+        demo: "https://xn--btem-1oa8j.com"
     }
 ]; 

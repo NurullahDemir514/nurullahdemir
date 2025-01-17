@@ -2,135 +2,141 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-  .card-base {
-    @apply bg-surface/30 backdrop-blur-sm p-6 rounded-xl border border-surface-dark/50 hover:border-accent/30 transition-all duration-300;
-  }
-}
-/* Scrollbar Stilleri */
-::-webkit-scrollbar {
-  width: 10px;
-  background: #030712;
+/* ================ Temel Ayarlar ================ */
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --background-dark: #1a1a1a;
+  --text-light: #ffffff;
+  --text-gray: rgba(156, 163, 175, 1);
 }
 
-::-webkit-scrollbar-thumb {
-  background: #10B981;
-  border-radius: 5px;
-  border: 3px solid #030712;
+/* ================ Reset & Normalize ================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #34D399;
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
 }
 
-/* Kod Animasyonu için Karakterler */
-.code-line {
-  font-family: 'Fira Code', monospace;
-  font-size: 12px;
-  line-height: 1.2;
-  color: #10B981;
-  text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
-  opacity: 0.15;
-  transform-origin: left;
-  animation: type 4s steps(30) infinite;
-}
-
-/* Gradient Arka Plan */
-.gradient-bg {
-  background: linear-gradient(125deg, #030712 0%, #0F172A 25%, #1E293B 50%, #0F172A 75%, #030712 100%);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-  position: relative;
-}
-
-.gradient-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 0% 0%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
-  animation: glowPulse 8s ease-in-out infinite;
-  z-index: 0;
-}
-
-/* Animasyonlu Arka Plan Desenleri */
-.bg-pattern {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, rgba(16, 185, 129, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
-  background-size: 30px 30px;
-  mask-image: radial-gradient(circle at 50% 50%, black, transparent);
-  opacity: 0.2;
-}
-
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%
-  }
-
-  50% {
-    background-position: 100% 50%
-  }
-
-  100% {
-    background-position: 0% 50%
-  }
-}
-
-@keyframes glowPulse {
-
-  0%,
-  100% {
-    opacity: 0.5
-  }
-
-  50% {
-    opacity: 0.8
-  }
-}
-
-@keyframes type {
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-                                to {
-                                  transform: translateX(0);
-                                  opacity: 0.15;
-                                }
-                                }
-                
-                                /* Scroll Özellikleri */
-                                html {
-                                  scroll-behavior: smooth;
-                                  height: 100vh;
-                                  overflow: hidden;
+/* ================ Sayfa Yapısı ================ */
+html {
+  scroll-behavior: smooth;
+  height: 100vh;
+  overflow: hidden;
+  --scroll-duration: 1000ms;
 }
 
 body {
   height: 100vh;
-    overflow: hidden;
-  }
-  
-  main {
-    height: 100vh;
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  section {
-    min-height: 100vh;
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    will-change: transform;
+  overflow: hidden;
 }
+
+/* Scroll Container Styles */
+.snap-y {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  height: 100vh;
+  scroll-behavior: smooth;
+}
+
+.snap-always {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  transition: transform 1000ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+section {
+  transition: transform 1000ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+section.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ================ Navigasyon Noktaları ================ */
+.nav-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  background-color: rgba(75, 85, 99, 0.5);
+  transition: all 300ms ease;
+  position: relative;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+.nav-dot:hover {
+  background-color: var(--text-gray);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.nav-dot.active {
+  background-color: var(--text-light);
+  transform: scale(1.25);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.nav-dot span {
+  opacity: 0;
+  transform: translateX(0.5rem);
+    transition: all 300ms ease;
+    background-color: rgba(31, 41, 55, 0.95);
+    font-weight: 500;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.nav-dot:hover span {
+  opacity: 1;
+  transform: translateX(0);
+  color: rgba(255, 255, 255, 1);
+  }
+/* ================ Kod Yağmuru Animasyonu ================ */
+.code-rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -999;
+  overflow: hidden;
+}
+
+.code-line {
+  position: absolute;
+  animation: codeRain 8s linear infinite;
+  color: rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+  font-family: monospace;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+@keyframes codeRain {
+  0% {
+    transform: translateY(-100%) translateX(0);
+    opacity: 0;
+  }
+
+                                                                10% {
+                                                                  opacity: 1;
+                                                                }
+                                                                90% {
+                                                                  opacity: 1;
+                                                                }
+                                
+                                                                100% {
+                                                                  transform: translateY(100vh) translateX(20px);
+                                                                  opacity: 0;
+                                                                }
+                                                                }
