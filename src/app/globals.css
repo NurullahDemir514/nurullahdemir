@@ -1,142 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ================ Temel Ayarlar ================ */
-:root {
-  --primary-color: #007bff;
-  --secondary-color: #6c757d;
-  --background-dark: #1a1a1a;
-  --text-light: #ffffff;
-  --text-gray: rgba(156, 163, 175, 1);
-}
-
-/* ================ Reset & Normalize ================ */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
-}
-
-*::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-}
-
-/* ================ Sayfa Yapısı ================ */
-html {
-  scroll-behavior: smooth;
-  height: 100vh;
-  overflow: hidden;
-  --scroll-duration: 1000ms;
-}
-
-body {
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* Scroll Container Styles */
-.snap-y {
-  scroll-snap-type: y mandatory;
-  overflow-y: scroll;
-  height: 100vh;
-  scroll-behavior: smooth;
-}
-
-.snap-always {
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  transition: transform 1000ms cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-section {
-  transition: transform 1000ms cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-section.active {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* ================ Navigasyon Noktaları ================ */
-.nav-dot {
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 9999px;
-  background-color: rgba(75, 85, 99, 0.5);
-  transition: all 300ms ease;
-  position: relative;
-  backdrop-filter: blur(8px);
-  cursor: pointer;
-}
-
-.nav-dot:hover {
-  background-color: var(--text-gray);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-
-.nav-dot.active {
-  background-color: var(--text-light);
-  transform: scale(1.25);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-}
-
-.nav-dot span {
-  opacity: 0;
-  transform: translateX(0.5rem);
-    transition: all 300ms ease;
-    background-color: rgba(31, 41, 55, 0.95);
-    font-weight: 500;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    white-space: nowrap;
-    pointer-events: none;
-}
-.nav-dot:hover span {
-  opacity: 1;
-  transform: translateX(0);
-  color: rgba(255, 255, 255, 1);
-  }
-/* ================ Kod Yağmuru Animasyonu ================ */
-.code-rain {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -999;
-  overflow: hidden;
-}
-
-.code-line {
-  position: absolute;
-  animation: codeRain 8s linear infinite;
-  color: rgba(255, 255, 255, 0.1);
-  white-space: nowrap;
-  font-family: monospace;
-  text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
-}
-@keyframes codeRain {
-  0% {
-    transform: translateY(-100%) translateX(0);
-    opacity: 0;
+@layer base {
+  body {
+    @apply bg-[#0a0f1c] text-white/90 antialiased;
   }
 
-                                                                10% {
-                                                                  opacity: 1;
-                                                                }
-                                                                90% {
-                                                                  opacity: 1;
-                                                                }
-                                
-                                                                100% {
-                                                                  transform: translateY(100vh) translateX(20px);
-                                                                  opacity: 0;
-                                                                }
-                                                                }
+        /* Scrollbar'ı gizle */
+        ::-webkit-scrollbar {
+          display: none;
+        }
+    
+        * {
+      -ms-overflow-style: none;
+        /* IE ve Edge için */
+        scrollbar-width: none;
+        /* Firefox için */
+      }
+}
+
+@layer components {
+  .btn {
+    @apply px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white/80 font-medium transition-all duration-300;
+  }
+
+                                .logo {
+                                  @apply font-bold text-transparent bg-clip-text bg-gradient-to-r from-white/90 to-white/50 font-['Dancing_Script'] text-3xl tracking-wider;
+                                }
+
+                                .nav-link {
+                                  @apply px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/80 transition-colors;
+                                }
+
+                                .card {
+                                  @apply p-6 rounded-xl bg-white/[0.02] border border-white/[0.05] backdrop-blur-sm hover:bg-white/[0.04] transition-colors duration-300;
+                                }
+
+                                .input {
+                                  @apply bg-white/[0.02] border border-white/[0.05] rounded-lg focus:border-white/20 focus:outline-none transition-colors text-white/90 placeholder-white/20;
+                                }
+
+                                .section-title {
+                                  @apply text-4xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-white/90 to-white/60;
+                                }
+
+                                .glass {
+                                  @apply bg-white/[0.02] backdrop-blur-sm rounded-lg border border-white/[0.05];
+                                }
+
+                                .text-gradient {
+                                  @apply text-transparent bg-clip-text bg-gradient-to-r from-white/90 to-white/60;
+  }
+
+                                .bg-gradient {
+                                  @apply bg-gradient-to-br from-white/[0.02] to-transparent;
+                                }
+}
+@layer utilities {
+  .border-gradient {
+    border-image: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) 1;
+  }
+}

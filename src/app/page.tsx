@@ -1,324 +1,257 @@
 'use client'
 
-import Image from "next/image";
-import { projects } from "@/data/projects";
-import { useEffect, useState } from "react";
+import dynamic from 'next/dynamic'
+import Image from 'next/image'
+import { useState } from 'react'
+import Header from '@/components/Header'
+
+const DynamicBackground = dynamic(() => import('../components/Background'), {
+  ssr: false
+})
 
 export default function Home() {
-  const [activeSection, setActiveSection] = useState('hero');
+  const [activeSection, setActiveSection] = useState('hero')
 
-  useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.5
-    };
+  const sections = [
+    { id: 'hero', label: 'Ana Sayfa' },
+    { id: 'hakkimda', label: 'Hakkımda' },
+    { id: 'projeler', label: 'Projeler' },
+    { id: 'iletisim', label: 'İletişim' }
+  ]
 
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-          entry.target.classList.add('active');
-        } else {
-          entry.target.classList.remove('active');
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget
+    const scrollPosition = container.scrollTop
+    const windowHeight = container.clientHeight
+
+    sections.forEach(({ id }) => {
+      const element = document.getElementById(id)
+      if (element) {
+        const rect = element.getBoundingClientRect()
+        if (rect.top >= -windowHeight / 2 && rect.top <= windowHeight / 2) {
+          setActiveSection(id)
         }
-      });
-    };
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-    document.querySelectorAll('section').forEach((section) => {
-      observer.observe(section);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
-    const element = document.getElementById(id);
-    const container = document.querySelector('.snap-y');
-
-    if (element && container) {
-      const elementTop = element.offsetTop;
-      const containerTop = container.scrollTop;
-      const targetPosition = elementTop;
-
-      container.scrollTo({
-        top: targetPosition,
-        behavior: 'smooth'
-      });
-
-      // Aktif bölümü güncelle
-      setActiveSection(id);
-    }
-  };
-
-  // Scroll olayını dinle
-  useEffect(() => {
-    const container = document.querySelector('.snap-y');
-    if (container) {
-      const handleScroll = () => {
-        const scrollPosition = container.scrollTop;
-        const windowHeight = window.innerHeight;
-
-        // Hangi bölümün görünür olduğunu kontrol et
-        document.querySelectorAll('section').forEach((section) => {
-          const sectionTop = section.offsetTop;
-          const sectionHeight = section.offsetHeight;
-
-          if (
-            scrollPosition >= sectionTop - windowHeight / 2 &&
-            scrollPosition < sectionTop + sectionHeight - windowHeight / 2
-          ) {
-            setActiveSection(section.id);
-          }
-        });
-      };
-
-      container.addEventListener('scroll', handleScroll);
-      return () => container.removeEventListener('scroll', handleScroll);
-    }
-  }, []);
-
-  const sections = ['hero', 'about', 'projects', 'contact'];
+      }
+    })
+  }
 
   return (
-    <div className="w-full h-screen overflow-y-scroll snap-y snap-mandatory relative z-[999]">
-      {/* Hero Section */}
-      <section id="hero" className="min-h-screen flex items-center justify-center bg-gray-900/50 snap-start snap-always relative">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center space-y-8 relative z-10">
-            <div className="flex justify-center mb-8">
-              <div className="relative w-48 h-48">
-                <div className="absolute inset-0 bg-gradient-to-r from-gray-700/50 via-gray-600/50 to-gray-700/50 rounded-full blur-md"></div>
-                <div className="absolute inset-1 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 rounded-full"></div>
-                <div className="absolute inset-2 rounded-full overflow-hidden border-4 border-gray-700/50">
-                  <Image
-                    src="/profile.jpg"
-                    alt="Nurullah Demir"
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    className="rounded-full hover:scale-110 transition-transform duration-500"
-                    priority
-                  />
-                </div>
-              </div>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white">
-              Merhaba, Ben Nurullah Demir
-            </h1>
-            <p className="text-xl text-gray-200">
-              Full Stack Web Geliştirici & Yazılım Mühendisi
-            </p>
-            <p className="text-gray-300 text-lg">
-              Modern web teknolojileri ile kullanıcı dostu, performanslı ve ölçeklenebilir uygulamalar geliştiriyorum.
-            </p>
-            <div className="flex gap-6 justify-center">
-              <a href="#contact" onClick={(e) => scrollToSection(e, 'contact')}
-                className="px-8 py-3 bg-gray-800/90 hover:bg-gray-700 text-white rounded-lg transition-all duration-500 transform hover:scale-105 hover:shadow-xl">
-                İletişime Geç
-              </a>
-              <a href="#projects" onClick={(e) => scrollToSection(e, 'projects')}
-                className="px-8 py-3 border-2 border-gray-700 hover:border-gray-600 text-gray-200 hover:text-white rounded-lg transition-all duration-500 transform hover:scale-105 hover:shadow-xl">
-                Projelerimi Gör
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+    <main className="relative min-h-screen">
+      <DynamicBackground />
+      <Header />
 
-      {/* About Section */}
-      <section id="about" className="min-h-screen flex items-center bg-gray-900/50 transition-all duration-700 snap-start snap-always">
-        <div className="container mx-auto px-4">
-          <div className="relative z-10 max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-16 text-white">
-              Hakkımda
-            </h2>
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="space-y-8">
-                <p className="text-gray-200 text-lg leading-relaxed">
-                  7+ yıllık yazılım geliştirme deneyimine sahibim. Modern web teknolojileri konusunda uzmanlaşmış bir Full Stack geliştiriciyim.
-                </p>
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="p-6 bg-gray-800/80 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105">
-                    <h3 className="font-semibold text-gray-100 mb-4 text-lg">Frontend</h3>
-                    <ul className="space-y-3 text-gray-300">
-                      <li>React & Next.js</li>
-                      <li>TypeScript</li>
-                      <li>Tailwind CSS</li>
-                      <li>Redux & Context API</li>
-                    </ul>
-                  </div>
-                  <div className="p-6 bg-gray-800/80 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105">
-                    <h3 className="font-semibold text-gray-100 mb-4 text-lg">Backend</h3>
-                    <ul className="space-y-3 text-gray-300">
-                      <li>Node.js & Express</li>
-                      <li>Python & Django</li>
-                      <li>PostgreSQL & MongoDB</li>
-                      <li>REST & GraphQL</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="p-8 bg-gray-800/80 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105">
-                  <div className="text-4xl text-white mb-2 font-bold">7+</div>
-                  <div className="text-gray-300">Yıl Deneyim</div>
-                </div>
-                <div className="p-8 bg-gray-800/80 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105">
-                  <div className="text-4xl text-white mb-2 font-bold">50+</div>
-                  <div className="text-gray-300">Proje Tamamlandı</div>
-                </div>
-                <div className="p-8 bg-gray-800/80 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105">
-                  <div className="text-4xl text-white mb-2 font-bold">30+</div>
-                  <div className="text-gray-300">Mutlu Müşteri</div>
-                </div>
-                <div className="p-8 bg-gray-800/80 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105">
-                  <div className="text-4xl text-white mb-2 font-bold">100%</div>
-                  <div className="text-gray-300">Müşteri Memnuniyeti</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Projects Section */}
-      <section id="projects" className="min-h-screen flex items-center bg-gray-900/50 transition-all duration-700 snap-start snap-always">
-        <div className="container mx-auto px-4">
-          <div className="relative z-10 max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-16 text-white">
-              Projelerim
-            </h2>
-            <div className="space-y-8">
-              {projects.map((project, index) => (
-                <div key={index}
-                  className="bg-gray-800/80 rounded-lg p-8 shadow-lg transform transition-all duration-300 hover:scale-105">
-                  <h3 className="text-2xl font-semibold mb-4 text-white">{project.title}</h3>
-                  <p className="text-gray-200 mb-6 text-lg">{project.description}</p>
-                  <div className="flex flex-wrap gap-3 mb-6">
-                    {project.technologies.map((tech, techIndex) => (
-                      <span key={techIndex}
-                        className="px-4 py-2 text-sm bg-gray-700/80 text-gray-200 rounded-full">
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex gap-6">
-                    {project.github && (
-                      <a href={project.github} target="_blank" rel="noopener noreferrer"
-                        className="text-gray-200 hover:text-white transition-colors">
-                        <i className="fab fa-github text-2xl"></i>
-                      </a>
-                    )}
-                    {project.demo && (
-                      <a href={project.demo} target="_blank" rel="noopener noreferrer"
-                        className="text-gray-200 hover:text-white transition-colors">
-                        <i className="fas fa-external-link-alt text-2xl"></i>
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="min-h-screen flex items-center bg-gray-900/50 transition-all duration-700 snap-start snap-always">
-        <div className="container mx-auto px-4">
-          <div className="relative z-10 max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-16 text-white">
-              İletişime Geç
-            </h2>
-            <div className="grid md:grid-cols-2 gap-12">
-              <div className="space-y-8">
-                <div className="flex items-center gap-6">
-                  <div className="w-14 h-14 flex items-center justify-center rounded-lg bg-gray-800/80 shadow-lg transform transition-all duration-300 hover:scale-110">
-                    <i className="fas fa-envelope text-gray-200 text-2xl"></i>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-100 text-lg">Email</h3>
-                    <a href="mailto:info@nurullahdemir.com"
-                      className="text-gray-200 hover:text-white transition-colors text-lg">
-                      info@nurullahdemir.com
-                    </a>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6">
-                  <div className="w-14 h-14 flex items-center justify-center rounded-lg bg-gray-800/80 shadow-lg transform transition-all duration-300 hover:scale-110">
-                    <i className="fas fa-map-marker-alt text-gray-200 text-2xl"></i>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-100 text-lg">Konum</h3>
-                    <p className="text-gray-200 text-lg">İstanbul, Türkiye</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6">
-                  <div className="w-14 h-14 flex items-center justify-center rounded-lg bg-gray-800/80 shadow-lg transform transition-all duration-300 hover:scale-110">
-                    <i className="fas fa-phone text-gray-200 text-2xl"></i>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-100 text-lg">Telefon</h3>
-                    <a href="tel:+905555555555"
-                      className="text-gray-200 hover:text-white transition-colors text-lg">
-                      +90 555 555 55 55
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <form className="space-y-6">
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Adınız"
-                    className="w-full px-6 py-4 bg-gray-800/80 border-2 border-gray-700 focus:border-gray-600 rounded-lg outline-none text-gray-100 text-lg transition-all duration-300"
-                  />
-                </div>
-                <div>
-                  <input
-                    type="email"
-                    placeholder="Email Adresiniz"
-                    className="w-full px-6 py-4 bg-gray-800/80 border-2 border-gray-700 focus:border-gray-600 rounded-lg outline-none text-gray-100 text-lg transition-all duration-300"
-                  />
-                </div>
-                <div>
-                  <textarea
-                    placeholder="Mesajınız"
-                    rows={4}
-                    className="w-full px-6 py-4 bg-gray-800/80 border-2 border-gray-700 focus:border-gray-600 rounded-lg outline-none text-gray-100 text-lg resize-none transition-all duration-300"
-                  ></textarea>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full px-8 py-4 bg-gray-800/90 hover:bg-gray-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 text-lg font-semibold"
-                >
-                  Mesaj Gönder
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Scroll Progress Indicator */}
-      <div className="fixed right-6 top-1/2 transform -translate-y-1/2 space-y-3 z-[9999]">
-        {sections.map((section) => (
+      {/* Navigation Dots */}
+      <div className="fixed right-8 top-1/2 -translate-y-1/2 space-y-6 z-[100]">
+        {sections.map(({ id, label }) => (
           <a
-            key={section}
-            href={`#${section}`}
-            onClick={(e) => scrollToSection(e, section)}
-            className={`nav-dot block ${activeSection === section ? 'active' : ''}`}
-            aria-label={`Scroll to ${section} section`}
+            key={id}
+            href={`#${id}`}
+            className="group relative flex items-center"
+            onClick={() => setActiveSection(id)}
           >
-            <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg bg-gray-800/90 text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-              {section.charAt(0).toUpperCase() + section.slice(1)}
+            <span className="absolute right-10 glass px-3 py-2 text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              {label}
             </span>
+            <div
+              className={`w-3 h-3 rounded-full border border-white/10 transition-all duration-300 hover:bg-white/10
+                ${activeSection === id ? 'bg-white/20 border-white/20' : 'hover:border-white/20'}`}
+            />
           </a>
         ))}
       </div>
-    </div>
-  );
+
+      {/* Content Sections */}
+      <div className="h-screen snap-y snap-mandatory overflow-y-auto" onScroll={handleScroll}>
+        {/* Hero Section */}
+        <section id="hero" className="h-screen snap-start flex items-center justify-center relative">
+          <div className="container px-4">
+            <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
+              {/* Sol Taraf - Profil Bilgileri */}
+              <div className="flex-1 space-y-6 text-left">
+                <div className="space-y-2">
+                  <p className="text-white/50 font-medium">Merhaba, ben</p>
+                  <h1 className="text-5xl font-bold text-gradient">Nurullah Demir</h1>
+                  <p className="text-2xl text-white/60">Full Stack Developer</p>
+                </div>
+
+                <p className="text-lg text-white/50 max-w-xl">
+                  Modern web teknolojileri ile kullanıcı dostu, performanslı ve ölçeklenebilir uygulamalar geliştiriyorum.
+                </p>
+
+                <div className="flex gap-4 pt-4">
+                  <a href="#iletisim" className="btn">
+                    İletişime Geç
+                  </a>
+                  <a href="#projeler" className="btn bg-transparent border border-white/10 hover:bg-white/5">
+                    Projelerimi Gör
+                  </a>
+                </div>
+
+                <div className="flex items-center gap-6 pt-8">
+                  <a href="https://github.com/nurullahdemir" target="_blank" rel="noopener noreferrer"
+                    className="text-white/40 hover:text-white/80 transition-colors">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                  </a>
+                  <a href="https://linkedin.com/in/nurullahdemir" target="_blank" rel="noopener noreferrer"
+                    className="text-white/40 hover:text-white/80 transition-colors">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    </svg>
+                  </a>
+                  <a href="mailto:info@nurullahdemir.com"
+                    className="text-white/40 hover:text-white/80 transition-colors">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              {/* Sağ Taraf - Profil Resmi */}
+              <div className="relative w-64 h-64">
+                {/* Arka plan efektleri */}
+                <div className="absolute -inset-2 bg-gradient-to-r from-white/10 to-transparent rounded-lg blur-xl"></div>
+
+                {/* Çerçeve */}
+                <div className="relative h-full rounded-lg bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm border border-white/10">
+                  {/* İç çerçeve ve fotoğraf */}
+                  <div className="relative h-full overflow-hidden rounded-lg">
+                    <Image
+                      src="/profile.jpg"
+                      alt="Nurullah Demir"
+                      fill
+                      className="object-cover object-center transform hover:scale-105 transition-transform duration-500"
+                      style={{ objectPosition: "center 20%" }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                  </div>
+
+                  {/* İnce kenar detayları */}
+                  <div className="absolute inset-0 border border-white/10 rounded-lg"></div>
+                  <div className="absolute inset-[2px] border border-white/5 rounded-lg"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* About Section */}
+        <section id="hakkimda" className="h-screen snap-start flex items-center justify-center">
+          <div className="container px-4">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="section-title text-center">Hakkımda</h2>
+              <p className="text-lg text-white/50 text-center mb-12">
+                Modern web teknolojileri konusunda uzmanlaşmış Full Stack geliştiriciyim.
+                Kullanıcı dostu, performanslı ve ölçeklenebilir uygulamalar geliştiriyorum.
+              </p>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="card hover:scale-105 transition-transform duration-300">
+                  <h3 className="text-2xl font-bold text-gradient mb-6">Frontend</h3>
+                  <ul className="space-y-4">
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-white/20"></div>
+                      <span className="text-white/60">React & Next.js</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-white/20"></div>
+                      <span className="text-white/60">TypeScript</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-white/20"></div>
+                      <span className="text-white/60">Tailwind CSS</span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="card hover:scale-105 transition-transform duration-300">
+                  <h3 className="text-2xl font-bold text-gradient mb-6">Backend</h3>
+                  <ul className="space-y-4">
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-white/20"></div>
+                      <span className="text-white/60">Node.js & Express</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-white/20"></div>
+                      <span className="text-white/60">Python & Django</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-white/20"></div>
+                      <span className="text-white/60">PostgreSQL & MongoDB</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Projects Section */}
+        <section id="projeler" className="h-screen snap-start flex items-center justify-center">
+          <div className="container px-4 py-12 overflow-y-auto">
+            <div className="max-w-3xl mx-auto space-y-8">
+              <h2 className="section-title">Projeler</h2>
+              <div className="space-y-6">
+                <div className="card hover:scale-105 transition-transform duration-300">
+                  <h3 className="text-xl font-bold text-gradient mb-4">Bütçem</h3>
+                  <p className="text-white/70 mb-4">
+                    Kişisel finans yönetimi için geliştirilmiş web uygulaması. Gelir-gider takibi, bütçe planlaması ve finansal raporlama özellikleri sunar.
+                  </p>
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex gap-2">
+                      <span className="tag">Next.js</span>
+                      <span className="tag">TypeScript</span>
+                      <span className="tag">Tailwind CSS</span>
+                      <span className="tag">MongoDB</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <a href="https://github.com/username/butcem" target="_blank" rel="noopener noreferrer" className="btn btn-sm">
+                        GitHub
+                      </a>
+                      <a href="https://xn--btem-1oa8j.com" target="_blank" rel="noopener noreferrer" className="btn btn-sm">
+                        Demo
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Contact Section */}
+        <section id="iletisim" className="h-screen snap-start flex items-center justify-center">
+          <div className="container px-4">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="section-title text-center">İletişim</h2>
+              <div className="card">
+                <form className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <input
+                      type="text"
+                      placeholder="Adınız"
+                      className="w-full px-4 py-3 input"
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      className="w-full px-4 py-3 input"
+                    />
+                  </div>
+                  <textarea
+                    placeholder="Mesajınız"
+                    rows={4}
+                    className="w-full px-4 py-3 input resize-none"
+                  />
+                  <button type="submit" className="w-full btn">
+                    Gönder
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  )
 }
